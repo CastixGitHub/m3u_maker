@@ -1,0 +1,6 @@
+__pycache__/
+*.egg-info/
+
+.dir-locals.el
+
+out.m3u

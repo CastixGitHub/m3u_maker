@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
     This file is part of m3u_maker.
 
@@ -16,7 +17,8 @@
 
 """
 
-from os import walk, getcwd
+from os import walk, getcwd, path
+from sys import stderr, argv
 import argparse
 
 
@@ -41,43 +43,57 @@ EXTENSIONS = (
 )
 
 parser = argparse.ArgumentParser(
-    prog=''''m3u playlist maker.''',
+    prog=''''m3u_maker''',
     description='''
-    Finds music files (flac, ogg, oga, wav, mp3, aiff, aif, loss, m4a, aac, alac, mogg, opus. webm, mp4, wma, mpc)
-    inside a source folder and it's subdirectories, makes a m3u file WITHOUT METADATA
+    Finds music files by extension (flac, ogg, oga, wav, mp3,
+    aiff, aif, loss, m4a, aac, alac, mogg, opus. webm, mp4, wma, mpc)
+    inside a source folder and it's subdirectories, makes a m3u file
+    without metadata
     ''',
     epilog='''
-    Example Usage: python m3u_maker.py --out out.m3u
+    Example Usage:
+    python m3u_maker.py ~/Music > out.m3u
+    Example with random order without duplicates:
+    python m3u_maker.py ~/Music | uniq | shuf > out.m3u
     ''',
+    formatter_class=argparse.RawTextHelpFormatter,
 )
-parser.add_argument('--source', default=getcwd(), help='''
-Source directory that contains the music (subdirectories are included).
-We suggest to use an absolute path for better compatibility with players.
-If you want to use relative paths remember that them are relative to
-the location of the output m3u file.
-Defaults to the directory where the script is called from (`pwd`).
+parser.add_argument(
+    'sources',
+    default=[getcwd()],
+    nargs='*',
+    help='''
+Source directories that contains the music
+(subdirectories are included).
+We suggest to use an absolute path for better
+compatibility with players.
+If you want to use relative paths remember that them
+are relative to the location of the output m3u file.
+Defaults to the directory where the script is called
+from (`pwd`).
 ''')
-parser.add_argument('--out', help='''
-Output file where the playlist should be saved.
-Remember to give it the m3u extension.
-If the file already exists it will be deleted!
-''')
-
-args = parser.parse_args()
-
-# prefix for absolute paths
-prefix = 'file://' if args.source.startswith('/') else ''
 
 
-def main():
-    with open(args.out, 'w') as out_file:
-        for walking in walk(args.source):
+def main(args):
+    """Entry point for m3u_maker"""
+    # I needed to reimport it here because of tests... this makes me sad
+    from sys import stderr   # pylint: disable=redefined-outer-name,reimported,import-outside-toplevel  # noqa
+    args = parser.parse_args(args)
+    for source in args.sources:
+        if not path.isdir(source):
+            print(f'{source} is not a directory', file=stderr)
+        source = source.rstrip('/') if source != '/' else '/'
+
+        # prefix for absolute paths
+        prefix = 'file://' if source.startswith('/') else ''
+        for walking in walk(source):
             for fname in walking[2]:
                 if any([fname.endswith(ext) for ext in EXTENSIONS]):
-                    out_file.write(f'{prefix}{walking[0]}/{fname}\n')
+                    print(f'{prefix}{walking[0]}/{fname}')
                 else:
-                    print(f'DISCARDED: {prefix}{walking[0]}/{fname}')
+                    print(f'DISCARDED: {prefix}{walking[0]}/{fname}', file=stderr)
 
 
 if __name__ == '__main__':
-    main()
+    args = argv[1:] if argv[0] in ('python', 'python3') else argv
+    main(argv[1:])
