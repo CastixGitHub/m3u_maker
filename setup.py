@@ -31,7 +31,7 @@ setup(
     python_requires='>=3.0',
     install_requires=[],
     extras_require={
-        'test': ['coverage', 'pytest'],
+        'test': ['coverage', 'pytest', 'pytest-cov'],
     },
     project_urls={
         'Bug Reports': 'https://github.com/CastixGitHub/m3u_maker/issues',

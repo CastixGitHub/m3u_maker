@@ -45,5 +45,5 @@ pip install -e '.[test]'
 ```
 run the tests with
 ```bash
-pytest
+pytest --cov=.
 ```

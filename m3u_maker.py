@@ -47,7 +47,7 @@ parser = argparse.ArgumentParser(
     description='''
     Finds music files by extension (flac, ogg, oga, wav, mp3,
     aiff, aif, loss, m4a, aac, alac, mogg, opus. webm, mp4, wma, mpc)
-    inside a source folder and it's subdirectories, makes a m3u file
+    inside folders and it's subdirectories, makes a m3u file
     without metadata
     ''',
     epilog='''
@@ -94,6 +94,6 @@ def main(args):
                     print(f'DISCARDED: {prefix}{walking[0]}/{fname}', file=stderr)
 
 
-if __name__ == '__main__':
+if __name__ == '__main__':  # pragma: no cover
     args = argv[1:] if argv[0] in ('python', 'python3') else argv
     main(argv[1:])
