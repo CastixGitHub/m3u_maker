@@ -1,6 +1,6 @@
 # m3u maker
 ## Installation
-This script doesn't have any dependencies except from python, so install python3 before.
+This script doesn't have any dependencies except from python, so install python3.6 before.
 python2 is not supported
 ### manual
 ```bash
@@ -14,7 +14,7 @@ usage: 'm3u_maker [-h] [sources [sources ...]]
 
     Finds music files by extension (flac, ogg, oga, wav, mp3,
     aiff, aif, loss, m4a, aac, alac, mogg, opus. webm, mp4, wma, mpc)
-    inside a source folder and it's subdirectories, makes a m3u file
+    inside a folders and it's subdirectories, makes a m3u file
     without metadata
     
 
