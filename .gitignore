@@ -1,7 +1,11 @@
 __pycache__/
 *.egg-info/
+m3u_maker-*/
+dist/
 .coverage
+.pypirc
 
 .dir-locals.el
+\#*\#
 
 out.m3u

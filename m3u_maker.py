@@ -18,7 +18,7 @@
 """
 
 from os import walk, getcwd, path
-from sys import stderr, argv
+import sys
 import argparse
 
 
@@ -72,28 +72,54 @@ are relative to the location of the output m3u file.
 Defaults to the directory where the script is called
 from (`pwd`).
 ''')
+parser.add_argument(
+    '--show-discarded',
+    '-d',
+    default=False,
+    action='store_true',
+    help='shows discarded files (txt, images, playlists, etc) on stderr',
+)
+
+
+
+def handle(base, fname, args):
+    """Core logic of file handling"""
+    try:
+        if any([fname.endswith(ext) for ext in EXTENSIONS]):
+            print(f'{base}/{fname}')
+        elif args.show_discarded:
+            print(
+                f'DISCARDED: {base}/{fname}',
+                file=sys.stderr,
+            )
+    except UnicodeEncodeError:
+        # until now this happened for a single file that had \udcc2 in their name
+        # it was a ö that was somehow corrupted...
+        # see https://stackoverflow.com/a/27367173 for alternative solutions
+        # we decided to not give any solution and report the error so the user can
+        # get a better, consistent audio library
+        # note: imported this way because this seems a rare case...
+        print(
+            f'ERROR: Weird file name: '
+            f'{base}/{__import__("unidecode").unidecode(fname)}',
+            file=sys.stderr,
+        )
+
 
 
 def main(args):
     """Entry point for m3u_maker"""
-    # I needed to reimport it here because of tests... this makes me sad
-    from sys import stderr   # pylint: disable=redefined-outer-name,reimported,import-outside-toplevel  # noqa
     args = parser.parse_args(args)
     for source in args.sources:
         if not path.isdir(source):
-            print(f'{source} is not a directory', file=stderr)
+            print(f'{source} is not a directory', file=sys.stderr)
         source = source.rstrip('/') if source != '/' else '/'
 
         # prefix for absolute paths
         prefix = 'file://' if source.startswith('/') else ''
         for walking in walk(source):
             for fname in walking[2]:
-                if any([fname.endswith(ext) for ext in EXTENSIONS]):
-                    print(f'{prefix}{walking[0]}/{fname}')
-                else:
-                    print(f'DISCARDED: {prefix}{walking[0]}/{fname}', file=stderr)
-
+                handle(base=f'{prefix}{walking[0]}', fname=fname, args=args)
 
 if __name__ == '__main__':  # pragma: no cover
-    args = argv[1:] if argv[0] in ('python', 'python3') else argv
-    main(argv[1:])
+    main(sys.argv[1:])  # strip this script, because it searches for sources directories

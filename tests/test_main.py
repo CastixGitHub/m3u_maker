@@ -17,12 +17,26 @@
 """
 
 
-from m3u_maker import main
+from collections import namedtuple
+from m3u_maker import main, handle
+import pytest
 
 
 def test_default_path(capsys):
     """Current working directory should be used here"""
     main([])
+    cap = capsys.readouterr()
+    assert 'file:///' in cap.out, cap.out
+    assert 'test_files/01 ok.mp3' in cap.out, cap.out
+    assert 'test_files/02 ok.flac' in cap.out, cap.out
+    assert '/test_files/02 ok.flac' in cap.out, cap.out
+    assert 'no.png' not in cap.out, cap.out
+    assert 'no.png' not in cap.err, cap.err
+
+
+def test_show_discarded(capsys):
+    """Current working directory should be used here"""
+    main(['-d'])
     cap = capsys.readouterr()
     assert 'file:///' in cap.out, cap.out
     assert 'test_files/01 ok.mp3' in cap.out, cap.out
@@ -40,7 +54,7 @@ def test_relative_path(capsys):
     assert 'tests/test_files/01 ok.mp3' in output, output
     assert 'tests/test_files/02 ok.flac' in output, output
     assert 'no.png' not in output, output
-    assert 'no.png' in error, error
+    assert 'no.png' not in error, error
 
 
 def test_absolute_path(capsys):
@@ -51,7 +65,7 @@ def test_absolute_path(capsys):
     assert 'test_files/02 ok.flac' in output, output
     assert '/test_files/02 ok.flac' in output, output
     assert 'no.png' not in output, output
-    assert 'no.png' in error, error
+    assert 'no.png' not in error, error
 
 
 def test_absolute_path_trailing_slash(capsys):
@@ -62,7 +76,7 @@ def test_absolute_path_trailing_slash(capsys):
     assert 'test_files/02 ok.flac' in output, output
     assert '/test_files/02 ok.flac' in output, output
     assert 'no.png' not in output, output
-    assert 'no.png' in error, error
+    assert 'no.png' not in error, error
 
 
 def test_not_existing_directory(capsys):
@@ -78,3 +92,15 @@ def test_two_directories(capsys):
     ])
     cap = capsys.readouterr()
     assert cap.out.count('test_files/01 ok.mp3') == 2
+
+
+def test_handle_weird_encoding(capsys):
+    args = namedtuple('MockArgs', ['show_discarded'])
+    with pytest.warns(RuntimeWarning):
+        handle(
+            base='prefix',
+            fname='\u8349\uD85B\uDFF6\u9DD7.mp3',
+            args=args(show_discarded=False)
+        )
+    cap = capsys.readouterr()
+    assert 'ERROR: Weird file name: prefix/Cao Ou .mp3' in cap.err, cap.err

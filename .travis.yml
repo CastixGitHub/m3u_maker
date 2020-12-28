@@ -3,8 +3,10 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
-  - "3.8-dev"  # 3.8 development branch
+  - "3.9"
+  - "3.9-dev"  # 3.9 development branch
   - "nightly"  # nightly build
+  - "pypy3"
 # command to install dependencies
 install:
   - pip install -e '.[test]'

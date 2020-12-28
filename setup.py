@@ -8,7 +8,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
 
 setup(
     name='m3u_maker',
-    version='0.0.1',
+    version='0.1.1',
     description='finds music files in directory and create a m3u playlist',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -16,10 +16,11 @@ setup(
     author='Castix',
     author_email='castix@autistici.org',
     classifiers=[
-        'Development Status :: 4 - Beta',
-        'Intended Audience :: Developers, End Users',
-        'Topic :: Software Development :: Audio :: Multimedia',
-        'License :: OSI Approved :: GPLv3 License',
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: End Users/Desktop',
+        'Topic :: Multimedia :: Sound/Audio',
+        'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
@@ -29,7 +30,7 @@ setup(
     ],
     keywords='m3u m3u8 playlist',
     python_requires='>=3.0',
-    install_requires=[],
+    install_requires=['unidecode'],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-cov'],
     },
