@@ -18,8 +18,15 @@
 
 
 from collections import namedtuple
-from m3u_maker import main, handle
+from unittest.mock import patch
+import sys
+from m3u_maker import main as _main, handle
 import pytest
+
+
+def main(argv):
+    with patch.object(sys, 'argv', ['mkm3u8', ] + argv):
+        _main()
 
 
 def test_default_path(capsys):

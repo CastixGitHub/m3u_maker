@@ -53,8 +53,8 @@ parser = argparse.ArgumentParser(
     epilog='''
     Example Usage:
     python m3u_maker.py ~/Music > out.m3u
-    Example with random order without duplicates:
-    python m3u_maker.py ~/Music | uniq | shuf > out.m3u
+    Example with random order:
+    python m3u_maker.py ~/Music | shuf > out.m3u
     ''',
     formatter_class=argparse.RawTextHelpFormatter,
 )
@@ -107,9 +107,9 @@ def handle(base, fname, args):
 
 
 
-def main(args):
+def main():
     """Entry point for m3u_maker"""
-    args = parser.parse_args(args)
+    args = parser.parse_args()
     for source in args.sources:
         if not path.isdir(source):
             print(f'{source} is not a directory', file=sys.stderr)
@@ -122,4 +122,4 @@ def main(args):
                 handle(base=f'{prefix}{walking[0]}', fname=fname, args=args)
 
 if __name__ == '__main__':  # pragma: no cover
-    main(sys.argv[1:])  # strip this script, because it searches for sources directories
+    main()
