@@ -1,13 +1,27 @@
 # m3u maker
+
 ## Installation
-This script doesn't have any dependencies except from python, so install python3.6 before.
+This script doesn't have any dependencies except from python, so install python3.6+ before.
 python2 is not supported
+
+### with pip
+```bash
+pip install m3u-maker
+m3u-maker ~/Music > out.m3u
+```
+
+#### available aliases
+the best way to run is directly with: `python -m m3u_maker`
+
+but the following aliases are available `m3u-maker`, `mkm3u`, `mkm3u8`
+
 ### manual
 ```bash
 git clone https://github.com/CastixGitHub/m3u_maker
 cd m3u_maker
 python m3u_maker.py ~/Music > out.m3u
 ```
+
 ## Help menu
 ```
 usage: 'm3u_maker [-h] [sources [sources ...]]
@@ -39,6 +53,8 @@ optional arguments:
 ```
 ## Testing & Development
 
+after activating a virtualenv:
+
 install the project with
 ```bash
 pip install -e '.[test]'
@@ -47,3 +63,12 @@ run the tests with
 ```bash
 pytest --cov=.
 ```
+
+### release a new version on pypi
+
+1. update the version number in setup.py
+1. clean the old built `rm -rf dist`
+1. build tarball and wheel with `python setup.py sdist bdist_wheel`
+1. install twine `pip install twine`
+1. push repository `git push`
+1. upload with `twine upload dist/m3u_maker-*`

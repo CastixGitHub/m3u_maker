@@ -19,12 +19,15 @@
 
 from collections import namedtuple
 from m3u_maker import main, handle
+from unittest.mock import patch
 import pytest
+import sys
 
 
+@patch.object(sys, 'argv', ['mkm3u'])
 def test_default_path(capsys):
     """Current working directory should be used here"""
-    main([])
+    main()
     cap = capsys.readouterr()
     assert 'file:///' in cap.out, cap.out
     assert 'test_files/01 ok.mp3' in cap.out, cap.out
@@ -34,9 +37,10 @@ def test_default_path(capsys):
     assert 'no.png' not in cap.err, cap.err
 
 
+@patch.object(sys, 'argv', ['mkm3u', '-d'])
 def test_show_discarded(capsys):
     """Current working directory should be used here"""
-    main(['-d'])
+    main()
     cap = capsys.readouterr()
     assert 'file:///' in cap.out, cap.out
     assert 'test_files/01 ok.mp3' in cap.out, cap.out
@@ -46,9 +50,10 @@ def test_show_discarded(capsys):
     assert 'no.png' in cap.err, cap.err
 
 
+@patch.object(sys, 'argv', ['mkm3u', 'tests/test_files'])
 def test_relative_path(capsys):
     """This test assumes you're running it with ``pytest`` from root directory"""
-    main(['tests/test_files'])
+    main()
     output, error = capsys.readouterr()
     assert 'file://' not in output, output
     assert 'tests/test_files/01 ok.mp3' in output, output
@@ -57,8 +62,9 @@ def test_relative_path(capsys):
     assert 'no.png' not in error, error
 
 
+@patch.object(sys, 'argv', ['mkm3u', __file__.replace('test_main.py', 'test_files')])
 def test_absolute_path(capsys):
-    main([__file__.replace('test_main.py', 'test_files')])
+    main()
     output, error = capsys.readouterr()
     assert 'file:///' in output, output
     assert 'test_files/01 ok.mp3' in output, output
@@ -68,8 +74,9 @@ def test_absolute_path(capsys):
     assert 'no.png' not in error, error
 
 
+@patch.object(sys, 'argv', ['mkm3u', __file__.replace('test_main.py', 'test_files/')])
 def test_absolute_path_trailing_slash(capsys):
-    main([__file__.replace('test_main.py', 'test_files/')])
+    main()
     output, error = capsys.readouterr()
     assert 'file:///' in output, output
     assert 'test_files/01 ok.mp3' in output, output
@@ -79,17 +86,16 @@ def test_absolute_path_trailing_slash(capsys):
     assert 'no.png' not in error, error
 
 
+@patch.object(sys, 'argv', ['mkm3u', 'not_here'])
 def test_not_existing_directory(capsys):
-    main(['not_here'])
+    main()
     _, error = capsys.readouterr()
     assert error == 'not_here is not a directory\n'
 
 
+@patch.object(sys, 'argv', ['mkm3u', __file__.replace('test_main.py', ''), __file__.replace('test_main.py', '')])
 def test_two_directories(capsys):
-    main([
-        __file__.replace('test_main.py', ''),
-        __file__.replace('test_main.py', '')
-    ])
+    main()
     cap = capsys.readouterr()
     assert cap.out.count('test_files/01 ok.mp3') == 2
 

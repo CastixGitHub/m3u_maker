@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# © 2023 Castix <castix@autistici.org> 16BA47F0EC01AF6F
 """
     This file is part of m3u_maker.
 
@@ -106,10 +107,10 @@ def handle(base, fname, args):
         )
 
 
-
-def main(args):
+def main():
     """Entry point for m3u_maker"""
-    args = parser.parse_args(args)
+    argv = sys.argv[1:]
+    args = parser.parse_args(argv)
     for source in args.sources:
         if not path.isdir(source):
             print(f'{source} is not a directory', file=sys.stderr)
@@ -122,4 +123,4 @@ def main(args):
                 handle(base=f'{prefix}{walking[0]}', fname=fname, args=args)
 
 if __name__ == '__main__':  # pragma: no cover
-    main(sys.argv[1:])  # strip this script, because it searches for sources directories
+    main()  # strip this script, because it searches for sources directories
